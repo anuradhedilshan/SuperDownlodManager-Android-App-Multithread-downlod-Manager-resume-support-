@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/startall"
+        android:title="Start All"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/pauseall"
+        android:title="Pause All"
+        app:showAsAction="never"
+        />
+    <group
+        android:enabled="true"
+        android:menuCategory="secondary"
+      >
+        <item android:title="rate us"></item>
+        <item android:title="Facebook"></item>
+    </group>
+
+</menu>

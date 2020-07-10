@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryDark"
+        android:minHeight="?attr/actionBarSize"
+        android:tag="df"
+        android:theme="?attr/actionBarTheme"
+        app:title="Downlod " />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/srcLayout_new"
+            android:layout_width="match_parent"
+            app:errorEnabled="true"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/src_new"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Src"
+                android:importantForAutofill="no"
+                android:inputType="text" />
+
+            <LinearLayout
+                android:layout_width="352dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/downSize_new"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:visibility="gone" />
+
+                <ProgressBar
+                    android:id="@+id/downSizeProgress_new"
+                    style="?android:attr/progressBarStyle"
+                    android:visibility="gone"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp" />
+            </LinearLayout>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/fileNameLayout_new"
+            app:errorEnabled="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:id="@+id/downlodFileName_new"
+                android:layout_height="wrap_content"
+                android:hint="filename"
+                android:importantForAutofill="no"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/path_new"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:hint="file_path_storage"
+                android:importantForAutofill="no"
+                android:inputType="none"
+                tools:ignore="InvalidId" />
+
+            <TextView
+                android:id="@+id/path_Choose_new"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="5dp"
+                android:text="chhose"
+                android:textColor="#2086ff"
+                tools:ignore="NotSibling" />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:minHeight="?attr/actionBarSize"
+        android:tag="df"
+        android:theme="?attr/actionBarTheme"
+        app:title="ResumeDownlod" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:padding="10dp">
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/nameLayout">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Downlod File"
+                android:inputType="text"
+                android:importantForAutofill="no" />
+
+            <LinearLayout
+                android:layout_width="352dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:visibility="gone"
+                    android:text="5.8Gb" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    />
+            </LinearLayout>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            <EditText
+                android:layout_width="match_parent"
+                android:id="@+id/resumelinkIn"
+                android:layout_height="wrap_content"
+                android:hint="Exsits File"
+                android:enabled="false"
+                android:inputType="none"
+                android:importantForAutofill="no"
+                tools:ignore="InvalidId" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="2dp"
+                android:padding="3dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:id="@+id/chooseExistFile"
+                android:text="Chhose"
+                android:textColor="#2086ff"
+                tools:ignore="NotSibling"
+                android:layout_alignParentRight="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="35dp"
+                android:layout_marginLeft="9dp"
+                android:text="startFrom : 600mb" />
+
+        </RelativeLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/pathLayout">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Name"
+                android:inputType="text"
+                android:importantForAutofill="no" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+            <EditText
+                android:layout_width="match_parent"
+                android:id="@+id/linkIn"
+                android:layout_height="wrap_content"
+                android:hint="File Linsk"
+                android:enabled="false"
+                android:inputType="none"
+                android:importantForAutofill="no"
+                tools:ignore="InvalidId" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="2dp"
+                android:padding="3dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:id="@+id/path_Choose"
+                android:text="Chhose"
+                android:textColor="#2086ff"
+                tools:ignore="NotSibling"
+                android:layout_alignParentRight="true" />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

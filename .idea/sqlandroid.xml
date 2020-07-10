@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SQLAndroidSettings">
+    <option name="databases">
+      <map>
+        <entry key="database_F:\Projects\Android\sdm\AndroidSqlEditorDatabases\">
+          <value>
+            <list>
+              <option value="0123456789ABCDEF" />
+              <option value="/databases/database" />
+              <option value="database" />
+              <option value="database" />
+              <option value="false" />
+              <option value="lk.lab24.sdm" />
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="storageVersion" value="2" />
+  </component>
+</project>

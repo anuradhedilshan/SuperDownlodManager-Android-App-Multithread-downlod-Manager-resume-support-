@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:icon="@drawable/refresh"
+        android:id="@+id/refresh"
+        android:title="refresh"
+        app:showAsAction="always" />
+    <item
+        android:icon="@drawable/prew"
+        android:id="@+id/backword"
+        android:title="backword"
+        app:showAsAction="ifRoom"></item>
+    <item
+        android:icon="@drawable/forw"
+        android:id="@+id/forword"
+        android:title="forword"
+        app:showAsAction="ifRoom"></item>
+</menu>

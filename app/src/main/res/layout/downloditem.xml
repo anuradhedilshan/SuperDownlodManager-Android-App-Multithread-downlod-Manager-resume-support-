@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
+
+    <ImageView
+        android:id="@+id/downImage"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="5dp"
+        android:contentDescription="downImage"
+        android:src="@drawable/tenor" />
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/bytes"
+    android:layout_below="@+id/downImage"
+    android:layout_marginLeft="5dp"
+    android:textSize="13dp"
+    android:text="100MB"
+    />
+    <TextView
+        android:id="@+id/downText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+         />
+
+    <TextView
+        android:id="@+id/pathText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/downText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="3dp"
+        android:padding="2dp"
+        android:textColor="#707B7C"
+        android:textSize="8sp"
+
+        />
+
+    <ProgressBar
+        android:id="@+id/downprogressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+    <TextView
+        android:id="@+id/downprogressBarText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/downprogressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="58dp"
+        android:text="0%" />
+
+    <ImageButton
+        android:id="@+id/downPS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/downCancel"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/cirecleimage"
+        android:clickable="true"
+        android:contentDescription="pauseResume"
+        android:padding="5dp"
+        android:src="@drawable/pause" />
+
+    <ImageButton
+        android:id="@+id/downCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="2dp"
+        android:background="@drawable/cirecleimage"
+        android:clickable="true"
+        android:contentDescription="Cancel"
+        android:padding="5dp"
+        android:src="@drawable/cencel" />
+
+    <TextView
+        android:id="@+id/type_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/downCancel"
+        android:layout_alignRight="@+id/downCancel"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="70dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginRight="2dp" />
+
+</RelativeLayout>
