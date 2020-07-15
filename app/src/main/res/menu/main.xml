@@ -3,19 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/startall"
+        android:icon="@drawable/start"
         android:title="Start All"
         app:showAsAction="never" />
     <item
         android:id="@+id/pauseall"
         android:title="Pause All"
+        android:icon="@drawable/pause"
         app:showAsAction="never"
         />
-    <group
-        android:enabled="true"
-        android:menuCategory="secondary"
-      >
-        <item android:title="rate us"></item>
-        <item android:title="Facebook"></item>
-    </group>
-
 </menu>

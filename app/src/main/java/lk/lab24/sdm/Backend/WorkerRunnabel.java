@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 class WorkerRunnabel implements Runnable {
 
 	private static final String TAG = "fuck";
@@ -43,11 +44,12 @@ class WorkerRunnabel implements Runnable {
 	@Override
 	public void run() {
 		Log.d("fuck", "Workor run");
-		this.df.name = this.file.getName();
+
 		try {
 			this.down();
 		} catch (Exception ex) {
 			Log.d(TAG, "run: Got a Error");
+
 			this.df.setState(Actions.CONNECTIONTIMEOUT);
 			Logger.getLogger(WorkerRunnabel.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -64,7 +66,7 @@ class WorkerRunnabel implements Runnable {
 		this.con.connect();
 		this.raf = new RandomAccessFile(this.file, "rw");
 		this.bis = new BufferedInputStream(con.getInputStream());
-		byte[] buffer = new byte[1024 * 8];
+		byte[] buffer = new byte[1024];
 		raf.seek(off);
 		int read = 0;
 		while ((read = bis.read(buffer)) != -1) {
@@ -82,6 +84,13 @@ class WorkerRunnabel implements Runnable {
 			Thread.sleep(500);
 			df.setState(Actions.COMPLETE);
 		}
+		int responceCode = con.getResponseCode();
+		if (responceCode < 300) {
+			Log.d(TAG, "down: Connection fuvccdfhkjfhkj");
+
+
+		}
+		Log.d(TAG, "down: Responce code =" + con.getResponseCode() + "length =" + con.getContentLength());
 		this.raf.close();
 	}
 

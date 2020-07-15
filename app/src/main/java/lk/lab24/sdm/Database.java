@@ -38,7 +38,8 @@ public class Database extends SQLiteOpenHelper {
 				"is_pause BOOLEAN NOT NULL DEFAULT 0," +
 				"is_get BOOLEAN NOT NULL DEFAULT 0 ," +
 				"is_downloded BOOLEAN NOT NULL DEFAULT 0," +
-				"is_error BOOLEAN NOT NULL DEFAULT 0" +
+				"is_error BOOLEAN NOT NULL DEFAULT 0," +
+				"error VARCHAR(700) NOT NULL DEFAULT 'cannot downlod file'" +
 				")");
 		Log.d("fuck", "onCreate: Data BAe TAbel");
 	}
@@ -97,6 +98,13 @@ public class Database extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues c = new ContentValues();
 		c.put("is_error", true);
+		db.update("queue", c, "id  =?", new String[]{Integer.toString(id)});
+	}
+
+	public void setError(int id, String error) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues c = new ContentValues();
+		c.put("error", error);
 		db.update("queue", c, "id  =?", new String[]{Integer.toString(id)});
 	}
 

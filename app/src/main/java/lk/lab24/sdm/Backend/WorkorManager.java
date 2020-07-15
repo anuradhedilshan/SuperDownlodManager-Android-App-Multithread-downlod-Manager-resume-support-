@@ -13,8 +13,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import lk.lab24.sdm.Database;
 
@@ -48,18 +46,21 @@ public class WorkorManager {
 			if (!f.exists() && !f.canWrite()) {
 				Log.d(TAG, "addMission: cant write");
 				events.error(id, "File Not exists Or Cant Write Data");
+				di.setError("File not exits or Cant write data");
+
 
 			} else if (f.getFreeSpace() < con.getContentLength()) {
 				events.error(id, "Out of Storage");
+				di.setError("Out of storage");
 			} else {
 
-				long length = (long) con.getContentLength();
+				long length = con.getContentLength();
 				di.setFilesize(length);
 				this.db.setFileType(id, extension);
 				this.db.setFileSize(id, length);
 				LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Actions.ACTION_update));
 				Log.d("fuck", "downlod prnekh");
-				if (TaskId == this.NEWDOWNLOD) {
+				if (TaskId == NEWDOWNLOD) {
 
 					if (con.getHeaderField("Accept-Ranges") != null) {
 						Log.d("fuck", " support");
@@ -103,10 +104,13 @@ public class WorkorManager {
 		long downlodedSize = 0;
 		long clength = 0;
 		try {
-			Log.d(TAG, "addEXMission: creat file");
+			Log.d(TAG, "addEXMission: creat file " + ex);
 			File f = new File(ex);
-			di.setDownloded(db.getDownloded(id));
+			long downloded = db.getDownloded(id) <= 0 ? f.length() : db.getDownloded(id);
+			Log.d(TAG, "addMission: " + downloded);
+			di.setDownloded(downloded);
 			di.setFilesize(db.getFilesize(id));
+			di.setFile(f);
 			if (di.getDownloded() <= 0) {
 				downlodedSize = f.length();
 			} else {
@@ -116,13 +120,18 @@ public class WorkorManager {
 
 			String extension = "." + MimeTypeMap.getFileExtensionFromUrl(url);
 			if (!f.exists() && !f.canWrite()) {
-
+				Log.d(TAG, "addMission: fileEx =" + f.exists() + " canWrite =" + f.canWrite());
 				events.error(id, "File Not exists Or Cant Write Data");
+				di.setError("File not exits or Cant write data");
 
 			} else if (f.getFreeSpace() < clength) {
 				events.error(id, "Out of Storage");
+				di.setError("Out of storage");
+
+
 			} else if (downlodedSize >= clength) {
 				events.error(id, "CAnnot Resume Alerdy Downloded Or file Error");
+				di.setError("Cannot Resume file Arerdy downloded or File error");
 			} else {
 				String n = f.getName();
 				if (ex == n) {
@@ -131,14 +140,10 @@ public class WorkorManager {
 				} else {
 					f.getName();
 				}
-				long length = (long) con.getContentLength();
-				di.setFile(f);
-				Log.d(TAG, "addEXMission: filelength  = " + f.length());
-				di.setFilesize(length);
-				this.db.setFileSize(id, length);
+				long length = con.getContentLength();
 				String src = url;
 				LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Actions.ACTION_update));
-				if (TaskId == this.RESUMEDOWNLOD) {
+				if (TaskId == RESUMEDOWNLOD) {
 					if (con.getHeaderField("Accept-Ranges") != null) {
 						long needDownlod = length - downlodedSize;
 						long partSize = needDownlod / 2;
@@ -209,6 +214,6 @@ public class WorkorManager {
 
 
 	interface Events {
-		public void error(int id, String erro);
+		void error(int id, String erro);
 	}
 }

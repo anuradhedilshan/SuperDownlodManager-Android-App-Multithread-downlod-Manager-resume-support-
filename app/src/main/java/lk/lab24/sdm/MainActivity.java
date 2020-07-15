@@ -2,10 +2,13 @@ package lk.lab24.sdm;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +19,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -28,7 +36,7 @@ import lk.lab24.sdm.dialogs.newDownlod;
 import lk.lab24.sdm.dialogs.resumeDownlod;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 	private static final String TAG = "fuck";
 	public static Context context;
 	Intent i;
@@ -45,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 		System.setProperty("http.keepAlive", "false");
 		super.onCreate(savedInstanceState);
 		//database
-		this.context = getApplicationContext();
+		context = getApplicationContext();
 		this.db = new Database(this);
 //        CDmMain cDmMain = new CDmMain(this.db,this);
 		setContentView(R.layout.activity_main);
@@ -61,6 +69,14 @@ public class MainActivity extends AppCompatActivity {
 //fab
 		fab();
 		upgradeSecurityProvider();
+
+
+		MobileAds.initialize(this, new OnInitializationCompleteListener() {
+			@Override
+			public void onInitializationComplete(InitializationStatus initializationStatus) {
+
+			}
+		});
 
 
 	}
@@ -102,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	protected void tablayoutwithViewPager() {
-		ViewPager2 viewPager = (ViewPager2) findViewById(R.id.viewPagger);
-		TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+		ViewPager2 viewPager = findViewById(R.id.viewPagger);
+		TabLayout tabLayout = findViewById(R.id.tab_layout);
 		viewPager.setAdapter(new FragmentPageAdapter(this));
 		new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
 			@Override
@@ -128,6 +144,12 @@ public class MainActivity extends AppCompatActivity {
 
 	}
 
+	//check it connect internet
+	private boolean isNetworkConnected() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
+	}
 
 	//For Floating Action Button
 	protected void fab() {
@@ -135,15 +157,24 @@ public class MainActivity extends AppCompatActivity {
 		this.fab = findViewById(R.id.fab);
 		this.add = findViewById(R.id.add);
 		this.resume.setOnClickListener(v -> {
-//            dialogFragmentResume = new resumeDownlod();
-//            dialogFragmentResume.show(getSupportFragmentManager(), "resumeDownlod");
+			if (isNetworkConnected()) {
+				dialogFragmentResume = new resumeDownlod(MainActivity.this.db);
+				dialogFragmentResume.show(getSupportFragmentManager(), "resumeDownlod");
+			} else {
+				Toast.makeText(getApplicationContext(), "PLEASE CONNECT TO THE INTERNET.", Toast.LENGTH_SHORT);
+			}
 
 
 		});
 		this.add.setOnClickListener(v -> {
 			//  startService(downlodServiceIntent);
-			dialogFragmentNew = new newDownlod(MainActivity.this.db);
-			dialogFragmentNew.show(getSupportFragmentManager(), "newDownlod");
+			if (isNetworkConnected()) {
+				dialogFragmentNew = new newDownlod(MainActivity.this.db);
+				dialogFragmentNew.show(getSupportFragmentManager(), "newDownlod");
+			} else {
+				Toast.makeText(getApplicationContext(), "PLEASE CONNECT TO THE INTERNET.", Toast.LENGTH_SHORT);
+			}
+
 		});
 
 
@@ -157,20 +188,56 @@ public class MainActivity extends AppCompatActivity {
 		setSupportActionBar(toolbar);
 		DrawerLayout drawer = findViewById(R.id.drawer_layout);
 		NavigationView navigationView = findViewById(R.id.nav_view);
+		navigationView.setItemIconTintList(null);
+		navigationView.setNavigationItemSelectedListener(this);
 		//set navigation toogle
 		ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 		drawer.setDrawerListener(actionBarDrawerToggle);
 		actionBarDrawerToggle.syncState();
+		AdView mAdView = findViewById(R.id.adView);
+		if (mAdView != null) {
+			AdRequest adRequest = new AdRequest.Builder().build();
+			mAdView.loadAd(adRequest);
+		}
 	}
+
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == 200) {
-			Log.d("fuck", "onActivityResult: " + resultCode);
-			String url = data.getStringExtra("URL");
-			Log.d("fuck", "onActivityResult: " + resultCode + " URL :" + url);
-			dialogFragmentNew.setValues(url);
+		if (data != null) {
+			if (requestCode == 200) {
+				Log.d("fuck", "onActivityResult: " + resultCode);
+				String url = data.getStringExtra("URL");
+				Log.d("fuck", "onActivityResult: " + resultCode + " URL :" + url);
+				dialogFragmentNew.setValues(url);
+			}
+		} else {
+			Toast.makeText(this, "Cannot Get Downlod Link from This ", Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	@Override
+	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+		int id = item.getItemId();
+		if (id == R.id.startall) {
+			LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Actions.ACTION_startAll));
+		} else if (id == R.id.pauseall) {
+			LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Actions.ACTION_pauseAll));
+		} else if (id == R.id.github) {
+			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/anuradhedilshan"));
+			startActivity(browserIntent);
+
+		} else if (id == R.id.facebook) {
+			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/anuradha.dilshan.7"));
+			startActivity(browserIntent);
+
+		} else if (id == R.id.website) {
+			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.ict24.tk"));
+			startActivity(browserIntent);
+		}
+
+
+		return true;
 	}
 }

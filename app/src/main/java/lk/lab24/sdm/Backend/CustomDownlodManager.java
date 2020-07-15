@@ -1,10 +1,7 @@
 package lk.lab24.sdm.Backend;
 
-import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -15,7 +12,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import lk.lab24.sdm.Database;
-import lk.lab24.sdm.R;
 import lk.lab24.sdm.dialogs.CustomNotification;
 
 public class CustomDownlodManager {
@@ -37,21 +33,7 @@ public class CustomDownlodManager {
 		c = new CustomNotification(this.context);
 		DownlodInfo.setDatabase(this.db);
 		this.wm = new WorkorManager(db, (int id, String error) -> {
-			db.setErrorState(id);
-			Log.d(TAG, "CustomDownlodManager: " + error);
-			DownlodInfo info = downlodInfoHashMap.get(id);
-			Notification.Builder b = info.getNotification();
-			b.setProgress(0, 0, false).
-					setContentTitle("Got Error").setSmallIcon(R.drawable.error)
-					.setContentText(error).
-					setPriority(Notification.PRIORITY_HIGH)
-					.setDefaults(Notification.DEFAULT_ALL).setStyle(new Notification.BigTextStyle());
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				b.setColor(Color.RED);
-			}
-			CustomNotification.getNotificationManagerCompat().notify(id, b.build());
-			Log.d(TAG, "CustomDownlodManager: After Notifdication");
-
+			Log.d(TAG, "CustomDownlodManager: Error" + error);
 		}, context);
 	}
 
@@ -79,6 +61,7 @@ public class CustomDownlodManager {
 			synchronized (this) {
 				Log.d("fuck", "addMision: adddde" + id);
 				db.setGetState(id);
+				db.removeErrorState(id);
 				ExecutorService s = wm.addMission(WorkorManager.NEWDOWNLOD, id, url, path, name, downlodInfoHashMap.get(id));
 				executorServiceHashMap.put(id, s);
 			}
@@ -91,14 +74,21 @@ public class CustomDownlodManager {
 	public void addExitsMission(int id, String url, String exFile) {
 		Log.d("fuck", "addExitsMission: ");
 		DownlodInfo d = new DownlodInfo();
-		d.setId(id);
-		d.setDownloded(db.getDownloded(id));
 		d.setNotification(c.createNotification(id, new File(exFile).getName()));
+		Log.d(TAG, "addExitsMission: After Notification");
 		d.setState(Actions.PENDING);
+		d.setId(id);
+		db.removeErrorState(id);
+		d.setDownloded(db.getDownloded(id));
 		downlodInfoHashMap.put(id, d);
 		es.submit(() -> {
-			ExecutorService s = wm.addMission(WorkorManager.RESUMEDOWNLOD, id, url, downlodInfoHashMap.get(id), exFile);
-			executorServiceHashMap.put(id, s);
+			synchronized (this) {
+				Log.d(TAG, "addExitsMission: " + exFile);
+				db.setGetState(id);
+				db.removeErrorState(id);
+				ExecutorService s = wm.addMission(WorkorManager.RESUMEDOWNLOD, id, url, downlodInfoHashMap.get(id), exFile);
+				executorServiceHashMap.put(id, s);
+			}
 		});
 
 
@@ -122,21 +112,23 @@ public class CustomDownlodManager {
 
 	public void pauseMission(int id) {
 		new Thread(() -> {
-			synchronized (this) {
-				this.db.setPauseState(id);
-				Log.d("fuck", "pauseMission");
-				DownlodInfo downlodInfo = downlodInfoHashMap.get(id);
+
+			this.db.setPauseState(id);
+			Log.d("fuck", "pauseMission");
+			DownlodInfo downlodInfo = downlodInfoHashMap.get(id);
+
+			ExecutorService s = executorServiceHashMap.get(id);
+			if (s != null) {
+				s.shutdownNow();
+				Log.d(TAG, "pauseMission: isShutdown : " + s.isShutdown());
+				Log.d(TAG, "pauseMission: isTerminated" + s.isTerminated());
 				if (downlodInfo != null) {
 					downlodInfo.setState(Actions.PAUSE);
 				}
-				ExecutorService s = executorServiceHashMap.get(id);
-				if (s != null) {
-					s.shutdownNow();
-					Log.d(TAG, "pauseMission: isShutdown : " + s.isShutdown());
-					Log.d(TAG, "pauseMission: isTerminated" + s.isTerminated());
+				synchronized (this) {
 					while (!s.isTerminated()) {
 						try {
-							Thread.sleep(2000);
+							Thread.sleep(1000);
 							Log.d(TAG, "pauseMission: in while");
 							db.setDownloded(id, downlodInfo.getDownloded());
 						} catch (InterruptedException e) {
@@ -144,11 +136,11 @@ public class CustomDownlodManager {
 						}
 					}
 				}
-
-
-				executorServiceHashMap.remove(id);
-				downlodInfoHashMap.remove(id);
 			}
+
+
+			executorServiceHashMap.remove(id);
+			downlodInfoHashMap.remove(id);
 
 
 		}).start();

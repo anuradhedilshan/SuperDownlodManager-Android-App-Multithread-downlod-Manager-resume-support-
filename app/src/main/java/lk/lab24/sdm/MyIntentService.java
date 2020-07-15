@@ -9,9 +9,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -80,10 +82,21 @@ public class MyIntentService extends IntentService {
 				switch (action) {
 					case Actions.ACTION_addMission:
 						Log.d(TAG, "onReceive: admision intent Service");
-						startOne(id);
+						if (isNetworkConnected()) {
+							startOne(id);
+						} else {
+							Toast.makeText(getApplicationContext(), "PLEASE CONNECT TO THE INTERNET.", Toast.LENGTH_SHORT);
+						}
+
 						break;
 					case Actions.ACTION_addExMission:
 						Log.d(TAG, "onReceive: exMission");
+						if (isNetworkConnected()) {
+							startExcitsone(id);
+						} else {
+							Toast.makeText(getApplicationContext(), "PLEASE CONNECT TO THE INTERNET.", Toast.LENGTH_SHORT);
+						}
+
 						break;
 					case Actions.ACTION_pause:
 						Log.d(TAG, "onReceive: Action pause" + id);
@@ -91,7 +104,12 @@ public class MyIntentService extends IntentService {
 						break;
 					case Actions.ACTION_resume:
 						Log.d(TAG, "onReceive: action resu,e" + id);
-						resume(id);
+						if (isNetworkConnected()) {
+							resume(id);
+						} else {
+							Toast.makeText(getApplicationContext(), "PLEASE CONNECT TO THE INTERNET.", Toast.LENGTH_SHORT);
+						}
+
 						break;
 					case Actions.ACTION_cancel:
 						cancel(id);
@@ -102,7 +120,12 @@ public class MyIntentService extends IntentService {
 						break;
 					case Actions.ACTION_startAll:
 						Log.d(TAG, "onReceive: Start All");
-						startAll();
+						if (isNetworkConnected()) {
+							startAll();
+						} else {
+							Toast.makeText(getApplicationContext(), "PLEASE CONNECT TO THE INTERNET.", Toast.LENGTH_SHORT);
+						}
+
 						break;
 				}
 
@@ -132,6 +155,13 @@ public class MyIntentService extends IntentService {
 		}
 
 
+	}
+
+	//check Connection
+	private boolean isNetworkConnected() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
 	}
 
 
@@ -199,6 +229,26 @@ public class MyIntentService extends IntentService {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void startExcitsone(int id) {
+		Cursor c = this.readabelDb.rawQuery("SELECT * FROM queue WHERE id = ?", new String[]{Integer.toString(id)});
+		c.moveToPosition(0);
+		String src = c.getString(c.getColumnIndex("src"));
+		String path = c.getString(c.getColumnIndex("path"));
+		String file_type = c.getString(c.getColumnIndex("file_type"));
+		String file_name = c.getString(c.getColumnIndex("file_name"));
+		boolean is_pause = c.getInt(c.getColumnIndex("is_pause")) == 1;
+		boolean is_get = c.getInt(c.getColumnIndex("is_get")) == 1;
+		if (!is_get) {
+			Log.d(TAG, "startOne: Addmission");
+			Log.d(TAG, "startExcitsone: " + path + file_name);
+			cdm.resumeMission(id, src, path + "/" + file_name);
+		} else {
+			if (is_pause) {
+				Log.d(TAG, "onReceive: added ex item");
+			}
+		}
 	}
 
 	public void resume(int id) {

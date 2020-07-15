@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.concurrent.atomic.AtomicLong;
 
 import lk.lab24.sdm.Database;
+import lk.lab24.sdm.R;
 import lk.lab24.sdm.dialogs.CustomNotification;
 
 public class DownlodInfo {
@@ -25,7 +26,6 @@ public class DownlodInfo {
 	public boolean is_PAUSE = false;
 	public boolean is_CANCELL = false;
 	public boolean is_COMPLETE = false;
-	String name = null;
 	Bundle b = new Bundle();
 	private int state = 0;
 	private File file = null;
@@ -64,24 +64,31 @@ public class DownlodInfo {
 
 	void setProgress(int downlodedP) {
 		downloded.addAndGet(downlodedP);
+		b.putInt("ID", this.id);
 		b.putInt("P", getProgress());
 		resultReceiver.send(Actions.PROGRESS_UPDATE, b);
 		try {
-			this.getNotification().setProgress(100, getProgress(), false).setContentTitle(name + " " + "ID:" + id).setContentText("" + getProgress() + "%");
+			this.getNotification().setProgress(100, getProgress(), false).setContentTitle(file.getName() + " " + "ID:" + id).setContentText("" + getProgress() + "%").setSmallIcon(R.drawable.downloading);
 			CustomNotification.getNotificationManagerCompat().notify(id, this.getNotification().build());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	void setError() {
+	void setError(String error) {
+		Log.d(TAG, "setError: ");
 		if (db != null) {
+			Log.d(TAG, "setError: db not null");
 			db.setErrorState(this.id);
+			db.setPauseState(id);
+			db.setError(id, error);
 		}
-		b.putString("E", "Connection Time out");
+		b.putInt("ID", this.id);
+		b.putString("E", error);
 		resultReceiver.send(Actions.ERROR_UPDATE, b);
 		try {
-			this.getNotification().setProgress(0, 0, false).setContentTitle("Cant Downlod" + name + " " + "ID:" + id);
+			this.getNotification().setProgress(0, 0, false).setContentTitle("Cant Downlod" + file.getName().toLowerCase() + " " + "ID:" + id)
+					.setContentText(error).setDefaults(Notification.DEFAULT_ALL).setPriority(Notification.PRIORITY_HIGH).setSmallIcon(R.drawable.error);
 			CustomNotification.getNotificationManagerCompat().notify(id, this.getNotification().build());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -96,7 +103,9 @@ public class DownlodInfo {
 			db.setComplete(this.id);
 		}
 		try {
-			this.getNotification().setProgress(0, 0, false).setContentTitle("Downlod Complete" + name + " " + "ID:" + id).setOngoing(false);
+			this.getNotification().setProgress(0, 0, false).
+					setContentTitle("Downlod Complete" + file.getName().toLowerCase() + " " + "ID:" + id).setDefaults(Notification.DEFAULT_ALL).setPriority(Notification.PRIORITY_HIGH)
+					.setOngoing(false).setSmallIcon(R.drawable.downloaded);
 			CustomNotification.getNotificationManagerCompat().notify(id, this.getNotification().build());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -122,8 +131,8 @@ public class DownlodInfo {
 			this.is_PAUSE = false;
 			this.is_CANCELL = false;
 
-		} else if (state == Actions.CROUPTDOWN) {
-			this.setError();
+		} else if (state == Actions.CROUPTDOWN || state == Actions.CONNECTIONTIMEOUT) {
+			this.setError("Connection Time Out");
 
 		} else if (state == Actions.COMPLETE) {
 			this.is_COMPLETE = true;
@@ -167,10 +176,11 @@ public class DownlodInfo {
 	}
 
 	public Notification.Builder getNotification() {
-		return notification;
+		return this.notification;
 	}
 
 	public void setNotification(Notification.Builder notification) {
+		Log.d(TAG, "setNotification: " + notification.toString());
 		this.notification = notification;
 	}
 }

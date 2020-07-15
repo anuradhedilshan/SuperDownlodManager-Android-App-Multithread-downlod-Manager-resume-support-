@@ -11,6 +11,13 @@ public class Actions {
 	public final static String ACTION_startAll = "co.lab24.startAll";
 	public final static String ACTION_update = "com.lab24.update";
 
+
+	//errors
+	public static int CROUPTDOWN = 6;
+	public static int CONNECTIONTIMEOUT = 7;
+	public static int LINKEROR = 8;
+	public static int ERROR = 9;
+
 	//Request Code
 	public final static int PROGRESS_UPDATE = 200;
 	public final static int ERROR_UPDATE = 400;
@@ -20,10 +27,6 @@ public class Actions {
 	public static int PENDING = 2;
 	public static int DOWNLODING = 3;
 	public static int PAUSE = 4;
-	public static int CROUPTDOWN = 6;
-	public static int CONNECTIONTIMEOUT = 7;
-	public static int LINKEROR = 8;
-	public static int ERROR = 9;
 	public static int COMPLETE = 10;
 	public static int CANCELL = 11;
 }
